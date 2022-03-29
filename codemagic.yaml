@@ -56,6 +56,11 @@ workflows:
       cache_paths:
         - $CM_BUILD_DIR/node_modules
 
+workflows:
+  my-workflow:
+    scripts:
+      - name: react native
+        script:  react-native run-android
 
 workflows:
   my-workflow:
