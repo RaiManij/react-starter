@@ -8,9 +8,10 @@ workflows:
       npm: latest
       java: 1.8
       cocoapods: 1.10.2
-      yarn: latest
 
     scripts:
+      - name: installing yarn
+        script: npm install --global yarn
       - name: yarn install
         script: yarn install
       - name: react native
