@@ -1,7 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import { PasswordRealmResponse,AuthorizeParams,Credentials, UserInfo, RefreshTokenResponse } from 'react-native-auth0';
-import { auth0 } from '../common/common';
-import jwt_decode from "jwt-decode";
+import {
+  PasswordRealmResponse,
+  AuthorizeParams,
+  Credentials,
+  UserInfo,
+  RefreshTokenResponse,
+} from 'react-native-auth0';
+import {auth0} from '../common/common';
+import jwt_decode from 'jwt-decode';
 import {
   StyleSheet,
   Text,
@@ -16,86 +22,103 @@ import {AppStyles} from '../AppStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAppDispatch} from '../reducers/hook';
 import {login} from '../reducers';
-import { LoginStackScreenProps } from '../types/NavigationTypes';
+import {LoginStackScreenProps} from '../types/NavigationTypes';
 import SessionManager from '../types/SessionManager';
-import HttpService from "../services/http.service"
+import HttpService from '../services/http.service';
 import Connection from '../types/Connection';
 import OAuthResponse from '../types/OAuthResponse';
 
-export const handleLoginResponse  = (response:Credentials | PasswordRealmResponse | RefreshTokenResponse)=>{
+export const handleLoginResponse = (
+  response: Credentials | PasswordRealmResponse | RefreshTokenResponse,
+) => {
   const accessToken = response.accessToken;
   const idToken = response.idToken;
   const refreshToken = response.refreshToken;
   const expiresIn = response.expiresIn;
   const type = response.tokenType;
   const user = jwt_decode<UserInfo>(idToken);
-    if (accessToken) {
-      AsyncStorage.setItem('@loggedInAccessToken:accessToken', accessToken);
-      if(refreshToken){
-        AsyncStorage.setItem('@loggedInRefreshToken:refreshToken', refreshToken);
-      }
-      AsyncStorage.setItem('@loggedInUserID:email', user.email);
-      AsyncStorage.setItem('@loggedInDateTimestamp:DateTimeStamp', new Date().getTime().toString());
-      AsyncStorage.setItem('@loggedInUserID:idToken', idToken);
-      AsyncStorage.setItem('@loggedInUserID:expiresIn', expiresIn.toString());
-      let oAuthResponse:OAuthResponse = new OAuthResponse(idToken!,accessToken!);
-      oAuthResponse.setRefreshToken(refreshToken!);
-      oAuthResponse.setExpiry(expiresIn!.toString());
-      let sessionManager:SessionManager = new SessionManager(user,oAuthResponse);
-      return sessionManager;
-    } else {
-      Alert.alert('User does not exist. Please try again.');
+  if (accessToken) {
+    AsyncStorage.setItem('@loggedInAccessToken:accessToken', accessToken);
+    if (refreshToken) {
+      AsyncStorage.setItem('@loggedInRefreshToken:refreshToken', refreshToken);
     }
+    AsyncStorage.setItem('@loggedInUserID:email', user.email);
+    AsyncStorage.setItem(
+      '@loggedInDateTimestamp:DateTimeStamp',
+      new Date().getTime().toString(),
+    );
+    AsyncStorage.setItem('@loggedInUserID:idToken', idToken);
+    AsyncStorage.setItem('@loggedInUserID:expiresIn', expiresIn.toString());
+    let oAuthResponse: OAuthResponse = new OAuthResponse(
+      idToken!,
+      accessToken!,
+    );
+    oAuthResponse.setRefreshToken(refreshToken!);
+    oAuthResponse.setExpiry(expiresIn!.toString());
+    let sessionManager: SessionManager = new SessionManager(
+      user,
+      oAuthResponse,
+    );
+    return sessionManager;
+  } else {
+    Alert.alert('User does not exist. Please try again.');
+  }
   return null;
-}
+};
 
-function LoginScreen({navigation}:LoginStackScreenProps<'Login'>) {
+function LoginScreen({navigation}: LoginStackScreenProps<'Login'>) {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [connections, setConnections] = useState<Connection[]>(
-    [] as Connection[]);
-  
-  console.log("LoginScreen is loading.....");
+    [] as Connection[],
+  );
+
+  console.log('LoginScreen is loading.....');
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    let connectionUrl = "connections";
-    let httpsUrl = "https://dev-cxxb7ck9.us.auth0.com";
-    let httpObject:HttpService = new HttpService(httpsUrl + "/api/v2/");
+    let connectionUrl = 'connections';
+    let httpsUrl = 'https://dev-cxxb7ck9.us.auth0.com';
+    let httpObject: HttpService = new HttpService(httpsUrl + '/api/v2/');
     setLoading(true);
-    let clientConnectionUrl = "https://cdn.us.auth0.com/client/ewj9rQJRkBxQq7VRKH1EpSbwpW29vGF4.js";
-    httpObject.getClientConnections(clientConnectionUrl,function(connectionList:Connection[]){
-      console.log(connectionList);
-      let filteredConnectionList:Connection[] = [];
-      if(connectionList.length > 0){
-        connectionList.forEach(function(con,value){
-            if(!con.passwordPolicy){
+    let clientConnectionUrl =
+      'https://cdn.us.auth0.com/client/ewj9rQJRkBxQq7VRKH1EpSbwpW29vGF4.js';
+    httpObject.getClientConnections(
+      clientConnectionUrl,
+      function (connectionList: Connection[]) {
+        console.log(connectionList);
+        let filteredConnectionList: Connection[] = [];
+        if (connectionList.length > 0) {
+          connectionList.forEach(function (con, value) {
+            if (!con.passwordPolicy) {
               filteredConnectionList.push(con);
             }
-        })
-        setConnections(filteredConnectionList);
-      }else{
-        console.log("No connections present..");
-      }
-      setLoading(false);
-    })
+          });
+          setConnections(filteredConnectionList);
+        } else {
+          console.log('No connections present..');
+        }
+        setLoading(false);
+      },
+    );
   }, []);
-
 
   const onPressLogin = () => {
     if (email.length <= 0 || password.length <= 0) {
       Alert.alert('Please fill out the required fields.');
       return;
     }
-    auth0.auth.passwordRealm({
-      username: email,
-      password: password,
-      realm: 'Username-Password-Authentication',
-    }).then((response:PasswordRealmResponse) => {
-       let sessionManager = handleLoginResponse(response);
-       dispatch(login(sessionManager!));
-       navigation.navigate('DrawerStack');
+    auth0.auth
+      .passwordRealm({
+        username: email,
+        password: password,
+        realm: 'Username-Password-Authentication',
+      })
+      .then((response: PasswordRealmResponse) => {
+        let sessionManager = handleLoginResponse(response);
+        dispatch(login(sessionManager!));
+        navigation.navigate('DrawerStack');
       })
       .catch((error) => {
         const {message} = error;
@@ -103,23 +126,23 @@ function LoginScreen({navigation}:LoginStackScreenProps<'Login'>) {
       });
   };
 
-
-  const onPressConnection = (connection:string) => {
-    if(loading){
+  const onPressConnection = (connection: string) => {
+    if (loading) {
       return;
     }
     setLoading(true);
     console.log(connection);
-    const authorizeParam:AuthorizeParams = {
-      state:"1234",
-      connection:connection,
-      prompt:"login",
-      max_age:0,
-      scope:"openid profile email offline_access",
-      audience:"https://dev-cxxb7ck9.us.auth0.com/userinfo"
+    const authorizeParam: AuthorizeParams = {
+      state: '1234',
+      connection: connection,
+      prompt: 'login',
+      max_age: 0,
+      scope: 'openid profile email offline_access',
+      audience: 'https://dev-cxxb7ck9.us.auth0.com/userinfo',
     };
-    auth0.webAuth.authorize(authorizeParam)
-      .then((data:Credentials) => {
+    auth0.webAuth
+      .authorize(authorizeParam)
+      .then((data: Credentials) => {
         let sessionManager = handleLoginResponse(data);
         dispatch(login(sessionManager!));
         setLoading(false);
@@ -173,23 +196,21 @@ function LoginScreen({navigation}:LoginStackScreenProps<'Login'>) {
         />
       ) : (
         connections.map((connection, index) => (
-
-                <Button containerStyle={styles.loginContainer}
-                style={styles.loginText}
-                onPress={()=>{onPressConnection(connection.name);}}
-                  key={connection.name}>
-                  Login with {connection.name}
-                </Button>
+          <Button
+            containerStyle={styles.loginContainer}
+            style={styles.loginText}
+            onPress={() => {
+              onPressConnection(connection.name);
+            }}
+            key={connection.name}>
+            Login with {connection.name}
+          </Button>
         ))
-        
       )}
     </View>
   );
 }
 
-         
-          
-       
 const styles = StyleSheet.create({
   container: {
     flex: 1,

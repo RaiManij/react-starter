@@ -1,14 +1,14 @@
 import React, {useLayoutEffect} from 'react';
 import {ScrollView, StyleSheet, Text} from 'react-native';
 import {connect} from 'react-redux';
-import { AppStyles} from '../AppStyles';
+import {AppStyles} from '../AppStyles';
 import {Configuration} from '../Configuration';
-import { RootState } from '../reducers';
-import { useAppSelector } from '../reducers/hook';
-import { LoginStackScreenProps } from '../types/NavigationTypes';
+import {RootState} from '../reducers';
+import {useAppSelector} from '../reducers/hook';
+import {LoginStackScreenProps} from '../types/NavigationTypes';
 
-function HomeScreen({navigation}:LoginStackScreenProps<'Home'>) {
-  const auth = useAppSelector((state:RootState) => state.auth);
+function HomeScreen({navigation}: LoginStackScreenProps<'Home'>) {
+  const auth = useAppSelector((state: RootState) => state.auth);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state:RootState) => ({
+const mapStateToProps = (state: RootState) => ({
   user: state.auth.user,
 });
 

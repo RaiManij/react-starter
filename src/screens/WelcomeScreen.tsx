@@ -1,20 +1,26 @@
 import React, {useEffect, useState} from 'react';
 import Button from 'react-native-button';
-import { PasswordRealmResponse,AuthorizeParams,Credentials, Auth0User, UserInfo, RefreshTokenResponse } from 'react-native-auth0';
-import jwt_decode from "jwt-decode";
+import {
+  PasswordRealmResponse,
+  AuthorizeParams,
+  Credentials,
+  Auth0User,
+  UserInfo,
+  RefreshTokenResponse,
+} from 'react-native-auth0';
+import jwt_decode from 'jwt-decode';
 import {ActivityIndicator, Text, View, StyleSheet, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAppDispatch} from '../reducers/hook';
 import {login} from '../reducers';
 import {AppStyles} from '../AppStyles';
-import { auth0 } from '../common/common';
-import { LoginStackScreenProps } from '../types/NavigationTypes';
+import {auth0} from '../common/common';
+import {LoginStackScreenProps} from '../types/NavigationTypes';
 import SessionManager from '../types/SessionManager';
 import OAuthResponse from '../types/OAuthResponse';
-import { handleLoginResponse } from './LoginScreen';
+import {handleLoginResponse} from './LoginScreen';
 
-
-function WelcomeScreen({navigation}:LoginStackScreenProps<'Welcome'>) {
+function WelcomeScreen({navigation}: LoginStackScreenProps<'Welcome'>) {
   const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useAppDispatch();
@@ -23,64 +29,78 @@ function WelcomeScreen({navigation}:LoginStackScreenProps<'Welcome'>) {
     tryToLoginFirst();
   }, []);
 
-  const verifyAccessToken = (expiresIn:string,loggedInTime:string) =>{
-    let expiresInNumber:number = parseInt(expiresIn);
-    let loggedInTimeNumber:number = parseInt(loggedInTime);
-    let currentTimeStamp:number = new Date().getTime();
-    if(currentTimeStamp > (loggedInTimeNumber + expiresInNumber)){
+  const verifyAccessToken = (expiresIn: string, loggedInTime: string) => {
+    let expiresInNumber: number = parseInt(expiresIn);
+    let loggedInTimeNumber: number = parseInt(loggedInTime);
+    let currentTimeStamp: number = new Date().getTime();
+    if (currentTimeStamp > loggedInTimeNumber + expiresInNumber) {
       return true;
     }
     return false;
-  }
+  };
 
   async function tryToLoginFirst() {
-    const accessToken = await AsyncStorage.getItem('@loggedInAccessToken:accessToken');
-    const refreshToken = await AsyncStorage.getItem('@loggedInRefreshToken:refreshToken');
+    const accessToken = await AsyncStorage.getItem(
+      '@loggedInAccessToken:accessToken',
+    );
+    const refreshToken = await AsyncStorage.getItem(
+      '@loggedInRefreshToken:refreshToken',
+    );
     const email = await AsyncStorage.getItem('@loggedInUserID:email');
     const idToken = await AsyncStorage.getItem('@loggedInUserID:idToken');
-    const loggedInTimeStamp = await AsyncStorage.getItem('@loggedInDateTimestamp:DateTimeStamp');
+    const loggedInTimeStamp = await AsyncStorage.getItem(
+      '@loggedInDateTimestamp:DateTimeStamp',
+    );
     const expiresIn = await AsyncStorage.getItem('@loggedInUserID:expiresIn');
     setIsLoading(true);
-    if (
-      email != null &&
-      email.length > 0 
-    ) {
-      if(verifyAccessToken(expiresIn!,loggedInTimeStamp!)){
-        auth0.auth.userInfo({token: accessToken!})
-        .then(() => {
-          const user = jwt_decode<UserInfo>(idToken!);
-          let oAuthResponse:OAuthResponse = new OAuthResponse(idToken!,accessToken!);
-          oAuthResponse.setRefreshToken(refreshToken!);
-          oAuthResponse.setExpiry(expiresIn!);
-          let sessionManager:SessionManager = new SessionManager(user,oAuthResponse);
-          dispatch(login(sessionManager));
-          navigation.navigate('DrawerStack');
-        })
-        .catch((error) => {
-          const {code, message} = error;
-          setIsLoading(false);
-          Alert.alert(message);
-        }).finally(()=>{
-          setIsLoading(false);
-        });
-      }else{
-        auth0.auth.refreshToken({refreshToken:refreshToken!}).then(function(value:RefreshTokenResponse){
-          let sessionManager = handleLoginResponse(value);
-          dispatch(login(sessionManager!));
-          navigation.navigate('DrawerStack');
-        }).catch((error) => {
-          const {code, message} = error;
-          setIsLoading(false);
-          Alert.alert(message);
-        }).finally(()=>{
-          setIsLoading(false);
-        });;
+    if (email != null && email.length > 0) {
+      if (verifyAccessToken(expiresIn!, loggedInTimeStamp!)) {
+        auth0.auth
+          .userInfo({token: accessToken!})
+          .then(() => {
+            const user = jwt_decode<UserInfo>(idToken!);
+            let oAuthResponse: OAuthResponse = new OAuthResponse(
+              idToken!,
+              accessToken!,
+            );
+            oAuthResponse.setRefreshToken(refreshToken!);
+            oAuthResponse.setExpiry(expiresIn!);
+            let sessionManager: SessionManager = new SessionManager(
+              user,
+              oAuthResponse,
+            );
+            dispatch(login(sessionManager));
+            navigation.navigate('DrawerStack');
+          })
+          .catch((error) => {
+            const {code, message} = error;
+            setIsLoading(false);
+            Alert.alert(message);
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+      } else {
+        auth0.auth
+          .refreshToken({refreshToken: refreshToken!})
+          .then(function (value: RefreshTokenResponse) {
+            let sessionManager = handleLoginResponse(value);
+            dispatch(login(sessionManager!));
+            navigation.navigate('DrawerStack');
+          })
+          .catch((error) => {
+            const {code, message} = error;
+            setIsLoading(false);
+            Alert.alert(message);
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
       }
       return;
-    }else{
+    } else {
       setIsLoading(false);
     }
-    
   }
 
   if (isLoading == true) {

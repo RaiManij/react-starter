@@ -10,8 +10,7 @@ import SignupScreen from '../screens/SignupScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import {AppIcon, AppStyles} from '../AppStyles';
 import DrawerContainer from '../components/DrawerContainer';
-import { LoginStackParameterList } from '../types/NavigationTypes';
-
+import {LoginStackParameterList} from '../types/NavigationTypes';
 
 const Stack = createStackNavigator<LoginStackParameterList>();
 // login stack
@@ -26,7 +25,6 @@ const LoginStack = () => (
     <Stack.Screen name="Welcome" component={WelcomeScreen} />
     <Stack.Screen name="Login" component={LoginScreen} />
     <Stack.Screen name="Signup" component={SignupScreen} />
-    
   </Stack.Navigator>
 );
 
@@ -90,14 +88,17 @@ const DrawerStack = () => (
       drawerPosition: 'left',
       headerShown: false,
     }}
-    drawerContent={({navigation,state,descriptors}) => (
-      <DrawerContainer navigation={navigation} state={state} descriptors={descriptors} />
+    drawerContent={({navigation, state, descriptors}) => (
+      <DrawerContainer
+        navigation={navigation}
+        state={state}
+        descriptors={descriptors}
+      />
     )}>
     <Drawer.Screen name="Tab" component={TabNavigator} />
   </Drawer.Navigator>
 );
 
-// Manifest of possible screens
 const RootNavigator = () => (
   <Stack.Navigator
     initialRouteName="LoginStack"

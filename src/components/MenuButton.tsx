@@ -1,7 +1,25 @@
 import React from 'react';
-import {GestureResponderEvent, Image, ImageSourcePropType, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
+import {
+  GestureResponderEvent,
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from 'react-native';
 
-export default function MenuButton(props: { onPress: ((event: GestureResponderEvent) => void) | undefined; source: ImageSourcePropType; title: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined; }) {
+export default function MenuButton(props: {
+  onPress: ((event: GestureResponderEvent) => void) | undefined;
+  source: ImageSourcePropType;
+  title:
+    | boolean
+    | React.ReactChild
+    | React.ReactFragment
+    | React.ReactPortal
+    | null
+    | undefined;
+}) {
   return (
     <TouchableHighlight
       onPress={props.onPress}

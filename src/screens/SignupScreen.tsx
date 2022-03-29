@@ -1,37 +1,36 @@
 import React, {useState} from 'react';
 import {Alert, StyleSheet, Text, TextInput, View} from 'react-native';
-import  {  CreateUserResponse } from 'react-native-auth0';
-import { auth0 } from '../common/common';
+import {CreateUserResponse} from 'react-native-auth0';
+import {auth0} from '../common/common';
 import Button from 'react-native-button';
 import {AppStyles} from '../AppStyles';
-import { LoginStackScreenProps } from '../types/NavigationTypes';
+import {LoginStackScreenProps} from '../types/NavigationTypes';
 
-function SignupScreen({navigation}:LoginStackScreenProps<'Signup'>) {
+function SignupScreen({navigation}: LoginStackScreenProps<'Signup'>) {
   const [fullname, setFullname] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-
   const onRegister = () => {
     const data = {
       email: email,
-      password:password,
-      username:email,
-      connection:"Username-Password-Authentication",
-      metadata:{
-        fullname:fullname,
+      password: password,
+      username: email,
+      connection: 'Username-Password-Authentication',
+      metadata: {
+        fullname: fullname,
         phone: phone,
-      }
+      },
     };
-    auth0.auth.createUser(data)
-      .then((response:CreateUserResponse) => {
-        if(response.Id && response.email){
+    auth0.auth
+      .createUser(data)
+      .then((response: CreateUserResponse) => {
+        if (response.Id && response.email) {
           navigation.navigate('Login');
-        }else{
-          Alert.alert("Error creating user..");
+        } else {
+          Alert.alert('Error creating user..');
         }
-        
       })
       .catch((error) => {
         const {code, message} = error;
