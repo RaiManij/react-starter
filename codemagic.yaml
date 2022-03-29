@@ -1,20 +1,20 @@
-
 workflows:
   my-workflow:
-   name: Android Workflow
-   instance_type : mac_mini
-   environment:
+    name: Android Workflow
+    instance_type: mac_mini
+    environment:
       xcode: 12.5
       node: 16.9.0
       npm: latest
       java: 1.8
       cocoapods: 1.10.2
       ndk: r23
+
     scripts:
       - name: npm install
-        script:  npm install
+        script: npm install
       - name: react native
-        script:  react-native run-android
+        script: react-native run-android
       - name: Build Android APK
         script: |
           cd android
@@ -22,5 +22,3 @@ workflows:
           ./gradlew assembleRelease
     artifacts:
       - app/build/outputs/**/**/*.apk
-
-
