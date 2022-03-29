@@ -10,8 +10,6 @@ workflows:
       cocoapods: 1.10.2
 
     scripts:
-      - name: installing yarn
-        script: npm install --global yarn
       - name: yarn install
         script: yarn install
       - name: react native
