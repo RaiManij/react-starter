@@ -13,7 +13,7 @@ workflows:
       - name: yarn install
         script: yarn install
       - name: react native
-        script: react-native run-android
+        script: npx react-native run-android
       - name: Build Android APK
         script: |
           cd android
