@@ -1,80 +1,25 @@
-workflows:
-  my-workflow:
-    scripts:
-      - name: say hello
-        script: echo "Hello Codemagician!"
-workflows:
-  android:
-    name: build, test & publish Android version
-    scripts:
-      - ...
-  ios:
-    name: build, test & publish iOS version
-    scripts:
-      - ...
-      
-workflows:
-  my-workflow:
-    instance_type: linux
-
-        
-workflows:
-  my-workflow:
-    instance_type: mac_pro
-    
-workflows:
-  my-workflow:
-    environment:
-      ndk: r23
-      
-workflows:
-  my-workflow:
-    environment:
-      cocoapods: 1.10.2
 
 workflows:
   my-workflow:
-    environment:
-      java: 1.8
-
-workflows:
-  my-workflow:
-    environment:
+  name: Android Workflow
+   instance_type: mac_mini
+   environment:
+      xcode: 12.5
       node: 16.9.0
       npm: latest
-
-workflows:
-  my-workflow:
+      java: 1.8
+      cocoapods: 1.10.2
+      ndk: r23
     scripts:
       - name: npm install
         script:  npm install
-
-
-workflows:
-  my-workflow:
-    cache:
-      cache_paths:
-        - $CM_BUILD_DIR/node_modules
-
-workflows:
-  my-workflow:
-    scripts:
       - name: react native
         script:  react-native run-android
-
-workflows:
-  my-workflow:
-    environment:
-      xcode: 12.5
-
-workflows:
-  my-workflow:
-    scripts:
       - name: Build Android APK
-        working_directory: android
         script: |
-         chmod +x gradlew  
-         ./gradlew assembleRelease
+          cd android
+          chmod +x gradlew  
+          ./gradlew assembleRelease
     artifacts:
       - app/build/outputs/**/**/*.apk
 
