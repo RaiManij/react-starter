@@ -8,10 +8,11 @@ workflows:
       npm: latest
       java: 1.8
       cocoapods: 1.10.2
+      yarn: latest
 
     scripts:
-      - name: npm install
-        script: npm install
+      - name: yarn install
+        script: yarn install
       - name: react native
         script: react-native run-android
       - name: Build Android APK
