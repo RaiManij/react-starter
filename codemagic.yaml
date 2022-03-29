@@ -13,11 +13,14 @@ workflows:
       - name: yarn install
         script: yarn install
       - name: react native
-        script: npx react-native run-android
-      - name: Build Android APK
         script: |
           cd android
-          chmod +x gradlew  
+          chmod +x gradlew 
+          cd.. 
+          npx react-native run-android
+      - name: Build Android APK
+        script: |
+
           ./gradlew assembleRelease
     artifacts:
       - app/build/outputs/**/**/*.apk
