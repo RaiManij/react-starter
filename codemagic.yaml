@@ -16,7 +16,7 @@ workflows:
         script: |
           cd android
           chmod +x gradlew 
-          cd.. 
+          cd -
           npx react-native run-android
       - name: Build Android APK
         script: |
