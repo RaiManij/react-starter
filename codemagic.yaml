@@ -1,8 +1,8 @@
 
 workflows:
   my-workflow:
-  name: Android Workflow
-   instance_type: mac_mini
+   name: Android Workflow
+   instance_type : mac_mini
    environment:
       xcode: 12.5
       node: 16.9.0
