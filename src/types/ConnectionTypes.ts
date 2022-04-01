@@ -4,7 +4,7 @@ export interface ConnectionMap {
   name: string;
   connections: Connection[];
 }
-export default interface ConnectionTypes {
+export  interface ConnectionTypes {
   id: string;
   tenant: string;
   subscription: string;

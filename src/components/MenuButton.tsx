@@ -3,55 +3,30 @@ import {
   GestureResponderEvent,
   Image,
   ImageSourcePropType,
-  StyleSheet,
   Text,
   TouchableHighlight,
   View,
 } from 'react-native';
+import {menuStyles} from './menuStyles';
 
-export default function MenuButton(props: {
-  onPress: ((event: GestureResponderEvent) => void) | undefined;
+interface MenuProps {
+  onPress?: (event: GestureResponderEvent) => void;
   source: ImageSourcePropType;
-  title:
-    | boolean
-    | React.ReactChild
-    | React.ReactFragment
-    | React.ReactPortal
-    | null
-    | undefined;
-}) {
+  title: string;
+}
+
+function MenuButton(props: MenuProps) {
   return (
     <TouchableHighlight
       onPress={props.onPress}
-      style={styles.btnClickContain}
+      style={menuStyles.btnClickContain}
       underlayColor="rgba(128, 128, 128, 0.1)">
-      <View style={styles.btnContainer}>
-        <Image source={props.source} style={styles.btnIcon} />
-        <Text style={styles.btnText}>{props.title}</Text>
+      <View style={menuStyles.btnContainer}>
+        <Image source={props.source} style={menuStyles.btnIcon} />
+        <Text style={menuStyles.btnText}>{props.title}</Text>
       </View>
     </TouchableHighlight>
   );
 }
 
-const styles = StyleSheet.create({
-  btnClickContain: {
-    flexDirection: 'row',
-    padding: 5,
-    marginTop: 5,
-    marginBottom: 5,
-  },
-  btnContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  btnIcon: {
-    height: 25,
-    width: 25,
-  },
-  btnText: {
-    fontSize: 16,
-    marginLeft: 10,
-    marginTop: 2,
-  },
-});
+export default MenuButton;

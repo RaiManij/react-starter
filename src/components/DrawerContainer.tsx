@@ -1,59 +1,39 @@
 import React from 'react';
-import {Alert, StyleSheet, View} from 'react-native';
+import {Alert, View} from 'react-native';
 import MenuButton from '../components/MenuButton';
-import {AppIcon} from '../AppStyles';
-import {useAppDispatch} from '../reducers/hook';
-import {logout} from '../reducers';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {auth0} from '../common/common';
+import {appIcon} from '../appStyles/appStyles';
 import {DrawerContentComponentProps} from '@react-navigation/drawer';
+import OAuthService from '../services/oauth.service';
+import {RootState} from '../reducers';
+import {useAppDispatch, useAppSelector} from '../reducers/hook';
+import {logout} from '../reducers/reducer';
+import {drawerStyles} from './drawerStyles';
 
-export default function DrawerContainer({
-  navigation,
-}: DrawerContentComponentProps) {
+const DrawerContainer = ({navigation}: DrawerContentComponentProps) => {
   const dispatch = useAppDispatch();
-
-  const clearAsyncStorage = () => {
-    AsyncStorage.clear()
-      .then(function () {
+  const oauthVariable = useAppSelector(
+    (state: RootState) => state.oAuthResponse,
+  );
+  const logoutSession = async () => {
+    OAuthService.oAuthLogout(
+      oauthVariable?.refreshToken,
+      () => {
         dispatch(logout());
         navigation.navigate('LoginStack');
-      })
-      .catch((error) => {
-        const {code, message} = error;
+      },
+      (error: Error) => {
+        const {message} = error;
         Alert.alert(message);
-      });
-  };
-
-  const logoutSession = async () => {
-    const refreshToken = await AsyncStorage.getItem(
-      '@loggedInRefreshToken:refreshToken',
+      },
     );
-    auth0.webAuth
-      .clearSession()
-      .then(function () {
-        auth0.auth
-          .revoke({refreshToken: refreshToken})
-          .then(function () {
-            clearAsyncStorage();
-          })
-          .catch((error) => {
-            const {code, message} = error;
-            Alert.alert(message);
-          });
-      })
-      .catch((error) => {
-        const {code, message} = error;
-        Alert.alert(message);
-      });
   };
 
   return (
-    <View style={styles.content}>
-      <View style={styles.container}>
+    <View style={drawerStyles.content}>
+      <View style={drawerStyles.container}>
         <MenuButton
           title="LOG OUT"
-          source={AppIcon.images.logout}
+          source={appIcon.images.logout}
           onPress={() => {
             logoutSession();
           }}
@@ -61,18 +41,6 @@ export default function DrawerContainer({
       </View>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  container: {
-    flex: 1,
-    alignItems: 'flex-start',
-    paddingHorizontal: 20,
-  },
-});
+export default DrawerContainer;

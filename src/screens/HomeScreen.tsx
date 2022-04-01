@@ -1,49 +1,53 @@
-import React, {useLayoutEffect} from 'react';
-import {ScrollView, StyleSheet, Text} from 'react-native';
-import {connect} from 'react-redux';
-import {AppStyles} from '../AppStyles';
-import {Configuration} from '../Configuration';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
+import {ScrollView, Text, FlatList, ListRenderItem, View} from 'react-native';
 import {RootState} from '../reducers';
 import {useAppSelector} from '../reducers/hook';
 import {LoginStackScreenProps} from '../types/NavigationTypes';
+import {homeStyles} from './homeStyles';
+import OAuthService from '../services/oauth.service';
+import {UserInfo} from 'react-native-auth0';
+import MenuButton from '../components/MenuButton';
+import {configuration} from '../configurations/configuration';
 
-function HomeScreen({navigation}: LoginStackScreenProps<'Home'>) {
-  const auth = useAppSelector((state: RootState) => state.auth);
-
+const HomeScreen = ({navigation}: LoginStackScreenProps<'Home'>) => {
+  const user = useAppSelector((state: RootState) => state.user);
+  const oAuthResponse = useAppSelector(
+    (state: RootState) => state.oAuthResponse,
+  );
+  const [users, setUsers] = useState<UserInfo[]>([] as UserInfo[]);
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Home',
     });
   }, []);
 
-  return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Welcome {auth.user?.name ?? 'User'}</Text>
-    </ScrollView>
+  const renderItem: ListRenderItem<UserInfo> = ({item}) => (
+    <MenuButton title={item.name} source={{uri: item.picture}}></MenuButton>
   );
-}
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-    flex: 1,
-    padding: Configuration.home.listing_item.offset,
-  },
-  title: {
-    fontWeight: 'bold',
-    color: AppStyles.color.title,
-    fontSize: 25,
-  },
-  userPhoto: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginLeft: 5,
-  },
-});
+  useEffect(() => {
+    if (oAuthResponse) {
+      OAuthService.getUsersList(
+        configuration.AUTH0_APIURL + 'users',
+        (userList: UserInfo[]) => {
+          setUsers(userList);
+        },
+      );
+    }
+  }, []);
 
-const mapStateToProps = (state: RootState) => ({
-  user: state.auth.user,
-});
+  return (
+    <View style={homeStyles.container}>
+      <ScrollView style={homeStyles.scrollView}>
+        <Text style={homeStyles.title}>Welcome {user?.name ?? 'User'}</Text>
+      </ScrollView>
+      <FlatList
+        data={users}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.email}
+      />
+    </View>
+  );
+};
 
-export default connect(mapStateToProps)(HomeScreen);
+export default HomeScreen;

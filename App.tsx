@@ -1,16 +1,19 @@
 import React from 'react';
 import {AppRegistry} from 'react-native';
 import {Provider} from 'react-redux';
-import store from './src/reducers';
+import {store, persisedStore} from './src/reducers';
+import {PersistGate} from 'redux-persist/integration/react';
 import AppNavigator from './src/navigations/AppNavigation';
 
-function StarterApp() {
+const StarterApp = () => {
   return (
     <Provider store={store}>
-      <AppNavigator />
+      <PersistGate loading={null} persistor={persisedStore}>
+        <AppNavigator />
+      </PersistGate>
     </Provider>
   );
-}
+};
 
 AppRegistry.registerComponent('rn_starter_kit', () => StarterApp);
 

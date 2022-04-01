@@ -1,11 +1,6 @@
-import {Platform, StyleSheet, Dimensions} from 'react-native';
-import {Configuration} from './Configuration';
+import { StyleSheet } from 'react-native';
 
-const {width, height} = Dimensions.get('window');
-const SCREEN_WIDTH = width < height ? width : height;
-const numColumns = 2;
-
-export const AppStyles = {
+export const appStyles = {
   color: {
     main: '#5ea23a',
     text: '#696969',
@@ -42,7 +37,7 @@ export const AppStyles = {
   },
 };
 
-export const AppIcon = {
+export const appIcon = {
   container: {
     backgroundColor: 'white',
     borderRadius: 20,
@@ -50,19 +45,19 @@ export const AppIcon = {
     marginRight: 10,
   },
   style: {
-    tintColor: AppStyles.color.tint,
+    tintColor: appStyles.color.tint,
     width: 25,
     height: 25,
   },
   images: {
-    home: require('../assets/icons/home.png'),
-    defaultUser: require('../assets/icons/default_user.jpg'),
-    logout: require('../assets/icons/shutdown.png'),
-    menu: require('../assets/icons/menu.png'),
+    home: require('../../assets/icons/home.png'),
+    defaultUser: require('../../assets/icons/default_user.jpg'),
+    logout: require('../../assets/icons/shutdown.png'),
+    menu: require('../../assets/icons/menu.png'),
   },
 };
 
-export const HeaderButtonStyle = StyleSheet.create({
+export const headerButtonStyle = StyleSheet.create({
   multi: {
     flexDirection: 'row',
   },
@@ -76,7 +71,7 @@ export const HeaderButtonStyle = StyleSheet.create({
     margin: 6,
   },
   rightButton: {
-    color: AppStyles.color.tint,
+    color: appStyles.color.tint,
     marginRight: 10,
     fontWeight: 'normal',
   },
@@ -85,7 +80,7 @@ export const HeaderButtonStyle = StyleSheet.create({
 export const ListStyle = StyleSheet.create({
   title: {
     fontSize: 16,
-    color: AppStyles.color.subtitle,
+    color: appStyles.color.subtitle,
     fontWeight: 'bold',
   },
   subtitleView: {

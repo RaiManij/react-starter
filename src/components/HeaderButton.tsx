@@ -5,15 +5,17 @@ import {
   GestureResponderEvent,
   ImageSourcePropType,
 } from 'react-native';
-import {AppIcon} from '../AppStyles';
+import {appIcon} from '../appStyles/appStyles';
 
-export default function HeaderButton(props: {
+interface HeaderButtonProps {
   onPress: ((event: GestureResponderEvent) => void) | undefined;
   icon: ImageSourcePropType;
-}) {
+}
+
+export const HeaderButton = (props: HeaderButtonProps) => {
   return (
-    <TouchableOpacity style={AppIcon.container} onPress={props.onPress}>
-      <Image style={AppIcon.style} source={props.icon} />
+    <TouchableOpacity style={appIcon.container} onPress={props.onPress}>
+      <Image style={appIcon.style} source={props.icon} />
     </TouchableOpacity>
   );
-}
+};
