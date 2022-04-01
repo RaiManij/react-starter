@@ -5,7 +5,7 @@ import Button from 'react-native-button';
 import {appStyles} from '../appStyles/appStyles';
 import oauthService from '../services/oauth.service';
 import {LoginStackScreenProps} from '../types/NavigationTypes';
-import {signUpStyles} from './SignupStyles';
+import {signUpStyles} from './signupStyles';
 
 const SignupScreen = ({navigation}: LoginStackScreenProps<'Signup'>) => {
   const [fullname, setFullname] = useState('');
